@@ -11,6 +11,7 @@ import org.openstreetmap.josm.command.AddCommand;
 import org.openstreetmap.josm.command.ChangePropertyCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
+import org.openstreetmap.josm.command.SelectCommand;
 import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -145,6 +146,8 @@ public class GridifyAction extends JosmAction {
         if (deleteSourceWay) {
             inputData.getSourceWay().ifPresent(way -> commands.add(new DeleteCommand(dataSet, way)));
         }
+
+        commands.add(new SelectCommand(dataSet, new ArrayList<>(ways)));
 
         return commands;
     }
