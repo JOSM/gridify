@@ -240,8 +240,8 @@ public class Preview extends JPanel {
 
                 for (int i = 1; i < n; i++) {
                     Coordinates between = new Coordinates();
-                    between.x = a.x + (Math.round(dx * i));
-                    between.y = a.y + (Math.round(dy * i));
+                    between.x = a.x + Math.round(dx * i);
+                    between.y = a.y + Math.round(dy * i);
                     points.add(between);
                 }
             }
