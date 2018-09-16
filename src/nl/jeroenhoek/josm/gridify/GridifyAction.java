@@ -5,7 +5,6 @@ import nl.jeroenhoek.josm.gridify.exception.GridifyException;
 import nl.jeroenhoek.josm.gridify.exception.UserInputException;
 import nl.jeroenhoek.josm.gridify.exception.UserCancelledException;
 import nl.jeroenhoek.josm.gridify.ui.GridifySettingsDialog;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.command.AddCommand;
 import org.openstreetmap.josm.command.ChangePropertyCommand;
@@ -13,6 +12,7 @@ import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.command.SelectCommand;
 import org.openstreetmap.josm.command.SequenceCommand;
+import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
@@ -65,7 +65,7 @@ public class GridifyAction extends JosmAction {
             commands = performGridifyAction(dataSet);
         } catch (UserInputException e) {
             // Tell the user what was wrong with their input.
-            JOptionPane.showMessageDialog(Main.parent, e.getMessage());
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), e.getMessage());
             return;
         } catch (UserCancelledException e) {
             // That's fine.
@@ -75,7 +75,7 @@ public class GridifyAction extends JosmAction {
             return;
         }
 
-        Main.main.undoRedo.add(new SequenceCommand(DESCRIPTION, commands));
+        UndoRedoHandler.getInstance().add(new SequenceCommand(DESCRIPTION, commands));
         MainApplication.getMap().repaint();
     }
 

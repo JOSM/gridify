@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="gridify" default="dist" basedir=".">
     <property name="commit.message" value="Commit message"/>
-    <property name="plugin.main.version" value="10580"/>
+    <property name="plugin.main.version" value="14140"/>
 
     <property name="plugin.author" value="Jeroen Hoek"/>
     <property name="plugin.class" value="nl.jeroenhoek.josm.gridify.GridifyPlugin"/>

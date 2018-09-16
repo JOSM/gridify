@@ -4,8 +4,8 @@ package nl.jeroenhoek.josm.gridify.ui;
 import nl.jeroenhoek.josm.gridify.InputData;
 import nl.jeroenhoek.josm.gridify.Operation;
 import nl.jeroenhoek.josm.gridify.ui.GridSizePanel.Nudge;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.ExtendedDialog;
+import org.openstreetmap.josm.gui.MainApplication;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,7 +35,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
     private final int COLUMNS_DEFAULT = 3;
 
     public GridifySettingsDialog(InputData inputData) {
-        super(Main.parent, tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
+        super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
         this.inputData = inputData;
     }
 
