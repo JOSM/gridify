@@ -22,15 +22,13 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Shortcut;
+import org.openstreetmap.josm.tools.SubclassFilteredCollection;
+import org.openstreetmap.josm.tools.Utils;
 
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static nl.jeroenhoek.josm.gridify.exception.UserInputException.error;
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -155,18 +153,19 @@ public class GridifyAction extends JosmAction {
     Optional<InputData> inputDataFromSelection(Collection<OsmPrimitive> selection) {
         // Four nodes?
         if (selection.size() == 4) {
-            List<Node> nodes = OsmPrimitive.getFilteredList(selection, Node.class);
+            SubclassFilteredCollection<OsmPrimitive, Node> nodes = Utils.filteredCollection(selection, Node.class);
             if (nodes.size() == 4) {
-                GridExtrema extrema = GridExtrema.from(nodes.get(0), nodes.get(1), nodes.get(2), nodes.get(3));
+                Iterator<Node> it = nodes.iterator();
+                GridExtrema extrema = GridExtrema.from(it.next(), it.next(), it.next(), it.next());
                 return Optional.of(new InputData(extrema));
             }
         }
 
         // One way consisting of four nodes?
         if (selection.size() == 1) {
-            List<Way> ways = OsmPrimitive.getFilteredList(selection, Way.class);
+            SubclassFilteredCollection<OsmPrimitive, Way> ways = Utils.filteredCollection(selection, Way.class);
             if (ways.size() == 1) {
-                Way way = ways.get(0);
+                Way way = ways.iterator().next();
                 List<Node> nodes = way.getNodes();
                 // In closed ways consisting of four nodes the first node is repeated as the last node,
                 // so #getNodes returns 5 nodes for such closed ways.
