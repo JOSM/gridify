@@ -1,3 +1,10 @@
 /bin/
 /javadoc/
+
+# Build output
 /build/
+data
+checkstyle-josm-gridify.xml
+
+# Eclipse settings.
+.settings
