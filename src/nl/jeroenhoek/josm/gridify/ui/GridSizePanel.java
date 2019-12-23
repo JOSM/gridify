@@ -26,8 +26,8 @@ public class GridSizePanel extends JPanel {
         this.columns = columns;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        spinnerRows = new PositiveSpinner(rows);
-        spinnerColumns = new PositiveSpinner(columns);
+        spinnerRows = new PositiveSpinner(rows, this::setRowCount);
+        spinnerColumns = new PositiveSpinner(columns, this::setColumnCount);
         JLabel xLabel = new JLabel("×");
         xLabel.setFont(new Font("Monospaced", Font.PLAIN, 18));
 
@@ -68,6 +68,11 @@ public class GridSizePanel extends JPanel {
             this.spinnerColumns.setValue(columns);
             changeCallback.changed(getRowCount(), getColumnCount());
         }
+    }
+
+    @Override
+    public boolean requestFocusInWindow() {
+        return this.spinnerRows.requestFocusInWindow();
     }
 
     public int getRowCount() {

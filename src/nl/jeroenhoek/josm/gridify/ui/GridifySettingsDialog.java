@@ -111,6 +111,8 @@ public class GridifySettingsDialog extends ExtendedDialog {
         setDefaultButton(1);
 
         super.setupDialog();
+
+        gridSizePanel.requestFocusInWindow();
     }
 
     @Override
