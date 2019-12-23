@@ -19,6 +19,8 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.TagMap;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.preferences.BooleanProperty;
+import org.openstreetmap.josm.data.preferences.IntegerProperty;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Shortcut;
@@ -31,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 
 import static nl.jeroenhoek.josm.gridify.exception.UserInputException.error;
+import static org.openstreetmap.josm.tools.I18n.set;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
@@ -98,7 +101,9 @@ public class GridifyAction extends JosmAction {
         InputData inputData = inputDataFromSelection(selection)
                 .orElseThrow(error(tr("Select four nodes, or a way consisting of four nodes.")));
 
-        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData);
+        GridifySettings settings = new GridifySettings();
+
+        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
         dialog.showDialog();
 
         // Only the OK button returns 1, the rest means 'Cancel' or a closed dialog window.
@@ -109,12 +114,20 @@ public class GridifyAction extends JosmAction {
         GridExtrema extrema = inputData.getGridExtrema();
         Collection<Command> commands = new ArrayList<>();
 
+        // Read the user provided settings.
         int numRows = dialog.getRowCount();
         int numColumns = dialog.getColumnCount();
         Operation operation = dialog.getOperation();
         boolean deleteSourceWay = dialog.deleteSourceWay();
         boolean copyTags = dialog.copyTags();
 
+        // Update settings properties now that we are about to commence the operation.
+        // This way the user gets to keep the last settings they entered.
+        settings.setNumRows(numRows);
+        settings.setNumColumns(numColumns);
+        settings.setDeleteSource(deleteSourceWay);
+        settings.setCopyTagsFromSource(copyTags);
+        settings.setOperation(operation);
 
         List<Node> nodesTopBetween = nodesBetween(extrema.one, extrema.two, numColumns - 1);
         addToDataSet(commands, dataSet, nodesTopBetween);

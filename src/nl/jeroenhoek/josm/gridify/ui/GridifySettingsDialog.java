@@ -1,6 +1,7 @@
 // License: GPL. For details, see LICENSE file.
 package nl.jeroenhoek.josm.gridify.ui;
 
+import nl.jeroenhoek.josm.gridify.GridifySettings;
 import nl.jeroenhoek.josm.gridify.InputData;
 import nl.jeroenhoek.josm.gridify.Operation;
 import nl.jeroenhoek.josm.gridify.ui.GridSizePanel.Nudge;
@@ -19,6 +20,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import static org.openstreetmap.josm.tools.I18n.set;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
@@ -26,19 +28,17 @@ import static org.openstreetmap.josm.tools.I18n.tr;
  */
 public class GridifySettingsDialog extends ExtendedDialog {
     private final InputData inputData;
+    private final GridifySettings settings;
 
     private GridSizePanel gridSizePanel;
     private OperationChooser operationChooser;
     private SourceWayPanel sourceWayPanel;
 
-    private final int ROWS_DEFAULT = 2;
-    private final int COLUMNS_DEFAULT = 3;
-
-    public GridifySettingsDialog(InputData inputData) {
+    public GridifySettingsDialog(InputData inputData, GridifySettings settings) {
         super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
         this.inputData = inputData;
+        this.settings = settings;
     }
-
     @Override
     public void setupDialog() {
         final Insets insetsDefault = new Insets(0, 0, 10, 0);
@@ -61,7 +61,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         operationChooserLabel.setBorder(underline);
         controlPanel.add(operationChooserLabel, constraints);
 
-        operationChooser = new OperationChooser(Operation.BLOCKS);
+        operationChooser = new OperationChooser(settings.getOperation());
         constraints.gridy = 1;
         constraints.insets = insetsIndent;
         controlPanel.add(operationChooser, constraints);
@@ -74,8 +74,8 @@ public class GridifySettingsDialog extends ExtendedDialog {
 
         gridSizePanel = new GridSizePanel(
                 preview::updateRowsColumns,
-                ROWS_DEFAULT,
-                COLUMNS_DEFAULT
+                settings.getNumRows(),
+                settings.getNumColumns()
         );
         constraints.gridy = 3;
         constraints.insets = insetsIndent;
@@ -88,9 +88,14 @@ public class GridifySettingsDialog extends ExtendedDialog {
             constraints.insets = insetsDefault;
             controlPanel.add(wayLabel, constraints);
 
+            // Always check the 'delete source way' option when a new way is used as template.
+            // It tends to have been drawn specifically to cut up.
             boolean deleteSourceWay = inputData.getSourceWay().get().isNew();
 
-            sourceWayPanel = new SourceWayPanel(true, deleteSourceWay);
+            sourceWayPanel = new SourceWayPanel(
+                    settings.copyTagsFromSource(),
+                    deleteSourceWay || settings.deleteSource()
+            );
             constraints.gridy = 5;
             constraints.insets = insetsIndent;
             controlPanel.add(sourceWayPanel, constraints);
@@ -115,13 +120,13 @@ public class GridifySettingsDialog extends ExtendedDialog {
 
     public int getRowCount() {
         return gridSizePanel == null
-                ? ROWS_DEFAULT
+                ? settings.getNumRows()
                 : gridSizePanel.getRowCount();
     }
 
     public int getColumnCount() {
         return gridSizePanel == null
-                ? COLUMNS_DEFAULT
+                ? settings.getNumColumns()
                 : gridSizePanel.getColumnCount();
     }
 
