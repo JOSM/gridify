@@ -36,7 +36,7 @@ public class GridifySettings {
     public int getNumColumns() {
         int columns = numColsSetting.get();
 
-        // Limit number of rows to permissible values.
+        // Limit number of columns to permissible values.
         if (columns < 1 || columns > 1000) {
             setNumColumns(4);
             return 4;
