@@ -193,6 +193,7 @@ public class GridifyAction extends JosmAction {
         return Optional.empty();
     }
 
+    @SuppressWarnings("MixedMutabilityReturnType")
     List<Node> nodesBetween(Node start, Node stop, int n) {
         if (n < 1) return Collections.emptyList();
 
