@@ -18,7 +18,15 @@ public class GridifySettings {
     );
 
     public int getNumRows() {
-        return numRowsSetting.get();
+        int rows = numRowsSetting.get();
+
+        // Limit number of rows to permissible values.
+        if (rows < 1 || rows > 1000) {
+            setNumRows(2);
+            return 2;
+        }
+
+        return rows;
     }
 
     public void setNumRows(int numRows) {
@@ -26,7 +34,15 @@ public class GridifySettings {
     }
 
     public int getNumColumns() {
-        return numColsSetting.get();
+        int columns = numColsSetting.get();
+
+        // Limit number of rows to permissible values.
+        if (columns < 1 || columns > 1000) {
+            setNumColumns(4);
+            return 4;
+        }
+
+        return columns;
     }
 
     public void setNumColumns(int numColumns) {

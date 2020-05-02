@@ -43,12 +43,14 @@ public class GridSizePanel extends JPanel {
     }
 
     void setRowCount(int rows) {
+        if (rows < 1 || rows > 1000) return;
         this.rows = rows;
         this.spinnerRows.setValue(rows);
         changeCallback.changed(getRowCount(), getColumnCount());
     }
 
     void setColumnCount(int columns) {
+        if (columns < 1 || columns > 1000) return;
         this.columns = columns;
         this.spinnerColumns.setValue(columns);
         changeCallback.changed(getRowCount(), getColumnCount());
