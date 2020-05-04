@@ -2,6 +2,7 @@
 package nl.jeroenhoek.josm.gridify;
 
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.tools.Shortcut;
@@ -28,7 +29,7 @@ public class GridifyAction extends JosmAction {
                         "tools:gridify",
                         tr("Tool: {0}", DESCRIPTION),
                         KeyEvent.VK_Y,
-                        Shortcut.NONE
+                        Shortcut.ALT_SHIFT
                 ),
                 true
         );
@@ -41,11 +42,14 @@ public class GridifyAction extends JosmAction {
 
     @Override
     protected void updateEnabledState() {
-
+        // Keep this action disabled when there is no data set to work with.
+        DataSet dataSet = getLayerManager().getEditDataSet();
+        setEnabled(dataSet != null && !dataSet.selectionEmpty());
     }
 
     @Override
     protected void updateEnabledState(Collection<? extends OsmPrimitive> selection) {
-
+        // Only enable this action when there is a selection to work with.
+        updateEnabledStateOnModifiableSelection(selection);
     }
 }
