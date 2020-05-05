@@ -38,18 +38,15 @@ public class GridifySettingsDialog extends ExtendedDialog {
         super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
         this.inputData = inputData;
         this.settings = settings;
-    }
-    @Override
-    public void setupDialog() {
+
         final Insets insetsDefault = new Insets(0, 0, 10, 0);
         final Insets insetsIndent = new Insets(0, 30, 10, 0);
         final Border underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.black);
 
-
         Preview preview = new Preview(inputData.getGridExtrema(), this);
 
         JPanel rootPanel = new JPanel();
-        setMinimumSize(new Dimension(550, 360));
+        //setMinimumSize(new Dimension(550, 360));
         rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.X_AXIS));
 
         JPanel controlPanel = new JPanel();
@@ -102,7 +99,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         }
 
         rootPanel.add(controlPanel);
-        rootPanel.add(Box.createHorizontalGlue());
+        rootPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 
         rootPanel.add(preview);
 
@@ -110,7 +107,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         setButtonIcons("ok.png", "cancel.png");
         setDefaultButton(1);
 
-        super.setupDialog();
+        setResizable(false);
 
         gridSizePanel.requestFocusInWindow();
     }
