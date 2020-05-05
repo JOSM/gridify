@@ -4,7 +4,6 @@ package nl.jeroenhoek.josm.gridify;
 import nl.jeroenhoek.josm.gridify.exception.GridifyException;
 import nl.jeroenhoek.josm.gridify.exception.UserInputException;
 import nl.jeroenhoek.josm.gridify.exception.UserCancelledException;
-import nl.jeroenhoek.josm.gridify.ui.GridifySettingsDialog;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.command.AddCommand;
 import org.openstreetmap.josm.command.ChangePropertyCommand;
@@ -103,23 +102,23 @@ public class GridifyAction extends JosmAction {
 
         GridifySettings settings = new GridifySettings();
 
-        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
-        dialog.showDialog();
-
-        // Only the OK button returns 1, the rest means 'Cancel' or a closed dialog window.
-        if (dialog.getValue() != 1) {
-            throw new UserCancelledException();
-        }
+//        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
+//        dialog.showDialog();
+//
+//        // Only the OK button returns 1, the rest means 'Cancel' or a closed dialog window.
+//        if (dialog.getValue() != 1) {
+//            throw new UserCancelledException();
+//        }
 
         GridExtrema extrema = inputData.getGridExtrema();
         Collection<Command> commands = new ArrayList<>();
 
         // Read the user provided settings.
-        int numRows = dialog.getRowCount();
-        int numColumns = dialog.getColumnCount();
-        Operation operation = dialog.getOperation();
-        boolean deleteSourceWay = dialog.deleteSourceWay();
-        boolean copyTags = dialog.copyTags();
+        int numRows = settings.getNumRows();
+        int numColumns = settings.getNumColumns();
+        Operation operation = settings.getOperation();
+        boolean deleteSourceWay = settings.deleteSource();
+        boolean copyTags = settings.copyTagsFromSource();
 
         // Update settings properties now that we are about to commence the operation.
         // This way the user gets to keep the last settings they entered.
