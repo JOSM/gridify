@@ -2,25 +2,38 @@
 package nl.jeroenhoek.josm.gridify;
 
 import nl.jeroenhoek.josm.gridify.exception.GridifyException;
-import nl.jeroenhoek.josm.gridify.exception.UserCancelledException;
 import nl.jeroenhoek.josm.gridify.exception.UserInputException;
+import nl.jeroenhoek.josm.gridify.exception.UserCancelledException;
+import nl.jeroenhoek.josm.gridify.ui.GridifySettingsDialog;
 import org.openstreetmap.josm.actions.JosmAction;
-import org.openstreetmap.josm.command.*;
+import org.openstreetmap.josm.command.AddCommand;
+import org.openstreetmap.josm.command.ChangePropertyCommand;
+import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.command.DeleteCommand;
+import org.openstreetmap.josm.command.SelectCommand;
+import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.coor.EastNorth;
-import org.openstreetmap.josm.data.osm.*;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.data.osm.TagMap;
+import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.preferences.BooleanProperty;
+import org.openstreetmap.josm.data.preferences.IntegerProperty;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Shortcut;
 import org.openstreetmap.josm.tools.SubclassFilteredCollection;
 import org.openstreetmap.josm.tools.Utils;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
 import static nl.jeroenhoek.josm.gridify.exception.UserInputException.error;
+import static org.openstreetmap.josm.tools.I18n.set;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
@@ -87,34 +100,34 @@ public class GridifyAction extends JosmAction {
 
         InputData inputData = inputDataFromSelection(selection)
                 .orElseThrow(error(tr("Select four nodes, or a way consisting of four nodes.")));
-//
-//        GridifySettings settings = new GridifySettings();
-//
-//        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
-//        dialog.showDialog();
+
+        GridifySettings settings = new GridifySettings();
+
+        GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
+        dialog.showDialog();
 
         // Only the OK button returns 1, the rest means 'Cancel' or a closed dialog window.
-//        if (dialog.getValue() != 1) {
-//            throw new UserCancelledException();
-//        }
+        if (dialog.getValue() != 1) {
+            throw new UserCancelledException();
+        }
 
         GridExtrema extrema = inputData.getGridExtrema();
         Collection<Command> commands = new ArrayList<>();
 
         // Read the user provided settings.
-        int numRows = 2;
-        int numColumns = 3;
-        Operation operation = Operation.BLOCKS;
-        boolean deleteSourceWay = true;
-        boolean copyTags = true;
+        int numRows = dialog.getRowCount();
+        int numColumns = dialog.getColumnCount();
+        Operation operation = dialog.getOperation();
+        boolean deleteSourceWay = dialog.deleteSourceWay();
+        boolean copyTags = dialog.copyTags();
 
         // Update settings properties now that we are about to commence the operation.
         // This way the user gets to keep the last settings they entered.
-//        settings.setNumRows(numRows);
-//        settings.setNumColumns(numColumns);
-//        settings.setDeleteSource(deleteSourceWay);
-//        settings.setCopyTagsFromSource(copyTags);
-//        settings.setOperation(operation);
+        settings.setNumRows(numRows);
+        settings.setNumColumns(numColumns);
+        settings.setDeleteSource(deleteSourceWay);
+        settings.setCopyTagsFromSource(copyTags);
+        settings.setOperation(operation);
 
         List<Node> nodesTopBetween = nodesBetween(extrema.one, extrema.two, numColumns - 1);
         addToDataSet(commands, dataSet, nodesTopBetween);
