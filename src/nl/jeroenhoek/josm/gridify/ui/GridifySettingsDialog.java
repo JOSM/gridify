@@ -10,6 +10,8 @@ import org.openstreetmap.josm.gui.MainApplication;
 import javax.swing.JLabel;
 import java.awt.Dimension;
 
+import static org.openstreetmap.josm.tools.I18n.tr;
+
 //import nl.jeroenhoek.josm.gridify.ui.GridSizePanel.Nudge;
 
 /**
@@ -24,8 +26,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
 //    private SourceWayPanel sourceWayPanel;
 
     public GridifySettingsDialog(InputData inputData, GridifySettings settings) {
-//        super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
-        super(MainApplication.getMainFrame(), "Gridify preview", "Gridify", "Cancel");
+        super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
         this.inputData = inputData;
         this.settings = settings;
     }
