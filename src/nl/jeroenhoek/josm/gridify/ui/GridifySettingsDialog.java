@@ -7,11 +7,8 @@ import nl.jeroenhoek.josm.gridify.Operation;
 import org.openstreetmap.josm.gui.ExtendedDialog;
 import org.openstreetmap.josm.gui.MainApplication;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-
-import static org.openstreetmap.josm.tools.I18n.tr;
+import javax.swing.JLabel;
+import java.awt.Dimension;
 
 //import nl.jeroenhoek.josm.gridify.ui.GridSizePanel.Nudge;
 
@@ -27,24 +24,25 @@ public class GridifySettingsDialog extends ExtendedDialog {
 //    private SourceWayPanel sourceWayPanel;
 
     public GridifySettingsDialog(InputData inputData, GridifySettings settings) {
-        super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
+//        super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
+        super(MainApplication.getMainFrame(), "Gridify preview", "Gridify", "Cancel");
         this.inputData = inputData;
         this.settings = settings;
     }
 
     @Override
     public void setupDialog() {
-        final Insets insetsDefault = new Insets(0, 0, 10, 0);
-        final Insets insetsIndent = new Insets(0, 30, 10, 0);
-        final Border underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.black);
+//        final Insets insetsDefault = new Insets(0, 0, 10, 0);
+//        final Insets insetsIndent = new Insets(0, 30, 10, 0);
+//        final Border underline = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.black);
 
 
         //Preview preview = new Preview(inputData.getGridExtrema(), this);
-        JLabel preview = new JLabel("Preview");
+//        JLabel preview = new JLabel("Preview");
 
-        JPanel rootPanel = new JPanel();
-        setMinimumSize(new Dimension(550, 360));
-        rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.X_AXIS));
+//        JPanel rootPanel = new JPanel();
+//        setMinimumSize(new Dimension(550, 360));
+//        rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.X_AXIS));
 
 //        JPanel controlPanel = new JPanel();
 //        controlPanel.setLayout(new GridBagLayout());
@@ -100,12 +98,12 @@ public class GridifySettingsDialog extends ExtendedDialog {
 //            controlPanel.add(sourceWayPanel, constraints);
 //        }
 
-        rootPanel.add(new JLabel("Test"));
-        rootPanel.add(Box.createHorizontalGlue());
+//        rootPanel.add(new JLabel("Test"));
+//        rootPanel.add(Box.createHorizontalGlue());
+//
+//        rootPanel.add(preview);
 
-        rootPanel.add(preview);
-
-        setContent(rootPanel, false);
+        setContent(new JLabel("Test"), false);
         setButtonIcons("ok.png", "cancel.png");
         setDefaultButton(1);
 
