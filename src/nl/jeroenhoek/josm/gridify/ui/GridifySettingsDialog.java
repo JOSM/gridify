@@ -42,7 +42,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
 //        JLabel preview = new JLabel("Preview");
 
         JPanel rootPanel = new JPanel();
-        setMinimumSize(new Dimension(550, 360));
+//        setMinimumSize(new Dimension(550, 360));
         rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.X_AXIS));
 
 //        JPanel controlPanel = new JPanel();
