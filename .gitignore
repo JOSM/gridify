@@ -8,3 +8,6 @@ checkstyle-josm-gridify.xml
 
 # Eclipse settings.
 .settings
+
+# IntelliJ settings.
+.idea
