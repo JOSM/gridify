@@ -92,6 +92,18 @@ public class PositiveSpinner extends JSpinner {
     }
 
     @Override
+    public void setValue(Object value) {
+        // No need to update the value if nothing changes. This prevents the caret being placed at an awkward position.
+        if (Objects.equals(value, lastValue)) return;
+
+        super.setValue(value);
+    }
+
+    public void caretToEnd() {
+        field.setCaretPosition(field.getText().length());
+    }
+
+    @Override
     public Dimension getMaximumSize() {
         return getPreferredSize();
     }

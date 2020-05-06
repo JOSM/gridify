@@ -5,15 +5,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import java.awt.Font;
 
 /**
  * UI widget that allows the user to set the grid division; i.e., how many rows and columns.
  */
 public class GridSizePanel extends JPanel {
-    private final JSpinner spinnerRows;
-    private final JSpinner spinnerColumns;
+    private final PositiveSpinner spinnerRows;
+    private final PositiveSpinner spinnerColumns;
 
     private final ChangeCallback changeCallback;
 
@@ -60,6 +59,7 @@ public class GridSizePanel extends JPanel {
         if (direction == Nudge.INCREMENT || this.rows > 1) {
             this.rows += direction == Nudge.INCREMENT ? 1 : -1;
             this.spinnerRows.setValue(rows);
+            this.spinnerRows.caretToEnd();
             changeCallback.changed(getRowCount(), getColumnCount());
         }
     }
@@ -68,6 +68,7 @@ public class GridSizePanel extends JPanel {
         if (direction == Nudge.INCREMENT || this.columns > 1) {
             this.columns += direction == Nudge.INCREMENT ? 1 : -1;
             this.spinnerColumns.setValue(columns);
+            this.spinnerColumns.caretToEnd();
             changeCallback.changed(getRowCount(), getColumnCount());
         }
     }
