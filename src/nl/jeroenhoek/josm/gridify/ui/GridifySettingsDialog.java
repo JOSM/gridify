@@ -103,7 +103,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         rootPanel.add(preview);
 
         setContent(rootPanel, false);
-        setButtonIcons("ok.png", "cancel.png");
+        setButtonIcons("ok", "cancel");
         setDefaultButton(1);
 
         setResizable(false);
