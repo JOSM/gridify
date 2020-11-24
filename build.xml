@@ -11,4 +11,14 @@
     <property name="plugin.canloadatruntime" value="true"/>
 
     <import file="../build-common.xml"/>
+
+    <exec dir="." executable="git" outputproperty="last-commit-ts">
+        <arg line="log -1 --pretty=format:%ct"/>
+    </exec>
+
+    <target name="additional-manifest">
+        <manifest file="MANIFEST" mode="update">
+            <attribute name="Plugin-Version" value="${last-commit-ts}"/>
+        </manifest>
+    </target>
 </project>
