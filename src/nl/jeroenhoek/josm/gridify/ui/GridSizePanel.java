@@ -3,9 +3,8 @@ package nl.jeroenhoek.josm.gridify.ui;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Font;
+import javax.swing.JButton;
 
 /**
  * UI widget that allows the user to set the grid division; i.e., how many rows and columns.
@@ -27,18 +26,26 @@ public class GridSizePanel extends JPanel {
 
         spinnerRows = new PositiveSpinner(rows, this::setRowCount);
         spinnerColumns = new PositiveSpinner(columns, this::setColumnCount);
-        JLabel xLabel = new JLabel("×");
-        xLabel.setFont(new Font("Monospaced", Font.PLAIN, 18));
-
+        JButton flipButton = new JButton("×");
 
         add(spinnerRows);
         add(Box.createHorizontalStrut(10));
-        add(xLabel);
+        add(flipButton);
         add(Box.createHorizontalStrut(10));
         add(spinnerColumns);
 
         spinnerRows.addChangeListener(e -> setRowCount((int) spinnerRows.getValue()));
+        flipButton.addActionListener(e -> flipRowsColumns());
         spinnerColumns.addChangeListener(e -> setColumnCount((int) spinnerColumns.getValue()));
+    }
+
+    void flipRowsColumns() {
+        int old_rows = this.rows;
+        this.rows = this.columns;
+        this.columns = old_rows;
+        this.spinnerRows.setValue(this.rows);
+        this.spinnerColumns.setValue(this.columns);
+        changeCallback.changed(getRowCount(), getColumnCount());
     }
 
     void setRowCount(int rows) {
