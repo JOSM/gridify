@@ -41,10 +41,10 @@ jobs:
     needs: check-release-needed
     strategy:
       matrix:
-        josm-revision: ["", "r14945"]
+        josm-revision: ["", "r19044"]
     uses: JOSM/JOSMPluginAction/.github/workflows/ant.yml@v2
     with:
       josm-revision: ${{ matrix.josm-revision }}
-      perform-revision-tagging: ${{  matrix.josm-revision == 'r14945' && needs.check-release-needed.outputs.release_needed == 'true' }}
+      perform-revision-tagging: ${{  matrix.josm-revision == 'r19044' && needs.check-release-needed.outputs.release_needed == 'true' }}
     secrets: inherit
 

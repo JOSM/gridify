@@ -17,7 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <plugin.src.dir>src</plugin.src.dir>
-        <plugin.main.version>14945</plugin.main.version>
+        <plugin.main.version>19044</plugin.main.version>
 
         <plugin.author>Jeroen Hoek</plugin.author>
         <plugin.class>nl.jeroenhoek.josm.gridify.GridifyPlugin</plugin.class>

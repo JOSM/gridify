@@ -1,8 +1,0 @@
-name: Java CI
-
-on: workflow_dispatch
-
-jobs:
-  call-workflow:
-    uses: JOSM/JOSMPluginAction/.github/workflows/ant.yml@v2
-

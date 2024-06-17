@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="gridify" default="dist" basedir=".">
     <property name="commit.message" value="Commit message"/>
-    <property name="plugin.main.version" value="14945"/>
+    <property name="plugin.main.version" value="19044"/>
 
     <property name="plugin.author" value="Jeroen Hoek"/>
     <property name="plugin.class" value="nl.jeroenhoek.josm.gridify.GridifyPlugin"/>
@@ -19,6 +19,7 @@
     <target name="additional-manifest">
         <manifest file="MANIFEST" mode="update">
             <attribute name="Plugin-Version" value="${last-commit-ts}"/>
+            <attribute name="14945_Plugin-Url" value="1606242219;https://github.com/JOSM/gridify/releases/download/v1.4.2/gridify.jar"/>
         </manifest>
     </target>
 </project>
