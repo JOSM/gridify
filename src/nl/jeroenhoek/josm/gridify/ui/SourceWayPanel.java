@@ -16,7 +16,7 @@ public class SourceWayPanel extends JPanel {
     private final JCheckBox copyTagsButton;
     private final JCheckBox deleteSourceWayButton;
 
-    public SourceWayPanel(boolean copyTags, boolean deleteSourceWay) {
+    public SourceWayPanel(boolean copyTags, boolean deleteSourceWay, boolean disableDeleteSourceWay) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         copyTagsButton = new JCheckBox(tr("Copy tags from source way"));
@@ -25,7 +25,12 @@ public class SourceWayPanel extends JPanel {
         add(copyTagsButton);
 
         deleteSourceWayButton = new JCheckBox(tr("Delete source way"));
-        deleteSourceWayButton.setSelected(deleteSourceWay);
+        if (disableDeleteSourceWay) {
+            deleteSourceWayButton.setEnabled(false);
+            deleteSourceWayButton.setToolTipText(tr("Disabled since source way is part of relation"));
+        } else {
+            deleteSourceWayButton.setSelected(deleteSourceWay);
+        }
 
         add(deleteSourceWayButton);
     }

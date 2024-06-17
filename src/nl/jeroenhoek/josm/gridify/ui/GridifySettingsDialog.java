@@ -90,7 +90,8 @@ public class GridifySettingsDialog extends ExtendedDialog {
 
             sourceWayPanel = new SourceWayPanel(
                     settings.copyTagsFromSource(),
-                    deleteSourceWay || settings.deleteSource()
+                    deleteSourceWay || settings.deleteSource(),
+                    !inputData.getSourceWay().get().getReferrers().isEmpty()
             );
             constraints.gridy = 5;
             constraints.insets = insetsIndent;
