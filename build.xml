@@ -7,7 +7,7 @@
     <property name="plugin.class" value="nl.jeroenhoek.josm.gridify.GridifyPlugin"/>
     <property name="plugin.description" value="Generates grids."/>
     <property name="plugin.icon" value="images/gridify.png"/>
-    <property name="plugin.link" value="https://github.com/JOSM/josm-gridify"/>
+    <property name="plugin.link" value="https://github.com/JOSM/gridify"/>
     <property name="plugin.canloadatruntime" value="true"/>
 
     <import file="../build-common.xml"/>
