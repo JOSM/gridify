@@ -1,10 +1,17 @@
 // License: GPL. For details, see LICENSE file.
 package nl.jeroenhoek.josm.gridify.ui;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+
+import org.openstreetmap.josm.tools.GBC;
 
 /**
  * UI widget that allows the user to set the grid division; i.e., how many rows and columns.
@@ -27,6 +34,9 @@ public class GridSizePanel extends JPanel {
         spinnerRows = new PositiveSpinner(rows, this::setRowCount);
         spinnerColumns = new PositiveSpinner(columns, this::setColumnCount);
         JButton flipButton = new JButton("×");
+        flipButton.setPreferredSize(new JLabel(flipButton.getText()).getPreferredSize());
+        flipButton.setPreferredSize(new Dimension(2 * flipButton.getPreferredSize().width, flipButton.getPreferredSize().height));
+        flipButton.setMaximumSize(flipButton.getPreferredSize());
 
         add(spinnerRows);
         add(Box.createHorizontalStrut(10));
