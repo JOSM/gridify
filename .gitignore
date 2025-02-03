@@ -3,7 +3,6 @@
 
 # Build output
 /build/
-data
 checkstyle-josm-gridify.xml
 
 # Eclipse settings.
