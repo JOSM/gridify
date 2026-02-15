@@ -1,0 +1,16 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <!-- Rotated 15 degrees around the center (16, 16) -->
+    <g transform="rotate(15 16 16)">
+        <!-- Outer Border: 24x24 square centered in the 32x32 viewbox -->
+        <rect x="4" y="4" width="24" height="24" fill="none" stroke="black" stroke-width="1"/>
+
+        <!-- Horizontal lines: Spaced by 8px (Height 24 / 3 rows) -->
+        <line x1="4" y1="12" x2="28" y2="12" stroke="black" stroke-width="1"/>
+        <line x1="4" y1="20" x2="28" y2="20" stroke="black" stroke-width="1"/>
+
+        <!-- Vertical lines: Spaced by 6px (Width 24 / 4 columns) -->
+        <line x1="10" y1="4" x2="10" y2="28" stroke="black" stroke-width="1"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="black" stroke-width="1"/>
+        <line x1="22" y1="4" x2="22" y2="28" stroke="black" stroke-width="1"/>
+    </g>
+</svg>
