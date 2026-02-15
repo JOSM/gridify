@@ -22,7 +22,7 @@
         <plugin.author>Jeroen Hoek</plugin.author>
         <plugin.class>nl.jeroenhoek.josm.gridify.GridifyPlugin</plugin.class>
         <plugin.description>Generates grids.</plugin.description>
-        <plugin.icon>images/gridify.png</plugin.icon>
+        <plugin.icon>images/gridify.svg</plugin.icon>
         <plugin.link>https://github.com/JOSM/gridify</plugin.link>
         <plugin.canloadatruntime>true</plugin.canloadatruntime>
     </properties>
