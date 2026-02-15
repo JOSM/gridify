@@ -2,16 +2,12 @@
 package nl.jeroenhoek.josm.gridify.ui;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
-
-import org.openstreetmap.josm.tools.GBC;
 
 /**
  * UI widget that allows the user to set the grid division; i.e., how many rows and columns.

@@ -20,7 +20,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import static org.openstreetmap.josm.tools.I18n.set;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**

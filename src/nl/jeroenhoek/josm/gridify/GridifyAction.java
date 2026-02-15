@@ -19,8 +19,6 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.TagMap;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.data.preferences.BooleanProperty;
-import org.openstreetmap.josm.data.preferences.IntegerProperty;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Shortcut;
@@ -33,7 +31,6 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 
 import static nl.jeroenhoek.josm.gridify.exception.UserInputException.error;
-import static org.openstreetmap.josm.tools.I18n.set;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 /**
