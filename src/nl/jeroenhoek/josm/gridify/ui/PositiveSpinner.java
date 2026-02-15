@@ -6,7 +6,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.FocusEvent;
-import java.text.ParseException;
 import java.util.Objects;
 
 /**

@@ -134,9 +134,7 @@ public final class GridExtrema {
          * @return The greater value of the width and height.
          */
         public double longestOfWidthAndHeight() {
-            return maxX - minX > maxY - minY
-                    ? maxX - minX
-                    : maxY - minY;
+            return Math.max(maxX - minX, maxY - minY);
         }
 
         public double getMinY() {
