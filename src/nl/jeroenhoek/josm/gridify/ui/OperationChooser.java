@@ -35,6 +35,11 @@ public class OperationChooser extends JPanel {
         }
     }
 
+    /**
+     * Returns the selected operation.
+     *
+     * @return The selected {@link Operation}.
+     */
     public Operation getSelected() {
         return selected;
     }

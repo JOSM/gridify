@@ -11,6 +11,11 @@ import org.openstreetmap.josm.plugins.PluginInformation;
  * {@code amenity=parking_space} etc.
  */
 public class GridifyPlugin extends Plugin {
+    /**
+     * Constructs a GridifyPlugin instance.
+     *
+     * @param info The plugin information.
+     */
     public GridifyPlugin(PluginInformation info) {
         super(info);
         MainMenu.add(MainApplication.getMenu().moreToolsMenu, new GridifyAction());

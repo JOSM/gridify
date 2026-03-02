@@ -116,38 +116,73 @@ public class GridifySettingsDialog extends ExtendedDialog {
         return getPreferredSize();
     }
 
+    /**
+     * Returns the selected row count from the spinner.
+     *
+     * @return The number of rows.
+     */
     public int getRowCount() {
         return gridSizePanel == null
                 ? settings.getNumRows()
                 : gridSizePanel.getRowCount();
     }
 
+    /**
+     * Returns the selected column count from the spinner.
+     *
+     * @return The number of columns.
+     */
     public int getColumnCount() {
         return gridSizePanel == null
                 ? settings.getNumColumns()
                 : gridSizePanel.getColumnCount();
     }
 
+    /**
+     * Increments or decrements the row count.
+     *
+     * @param direction The nudge direction.
+     */
     public void nudgeRowCount(Nudge direction) {
         if (gridSizePanel != null) {
             gridSizePanel.nudgeRowCount(direction);
         }
     }
 
+    /**
+     * Increments or decrements the column count.
+     *
+     * @param direction The nudge direction.
+     */
     public void nudgeColumnCount(Nudge direction) {
         if (gridSizePanel != null) {
             gridSizePanel.nudgeColumnCount(direction);
         }
     }
 
+    /**
+     * Returns the selected operation type.
+     *
+     * @return The selected {@link Operation}.
+     */
     public Operation getOperation() {
         return operationChooser.getSelected();
     }
 
+    /**
+     * Whether tags should be copied from the source way.
+     *
+     * @return True if tags should be copied.
+     */
     public boolean copyTags() {
         return inputData.getSourceWay().isPresent() && sourceWayPanel.copyTags();
     }
 
+    /**
+     * Whether the source way should be deleted.
+     *
+     * @return True if the source way should be deleted.
+     */
     public boolean deleteSourceWay() {
         return inputData.getSourceWay().isPresent() && sourceWayPanel.deleteSourceWay();
     }

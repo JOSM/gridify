@@ -126,6 +126,12 @@ public class Preview extends JPanel {
         g.drawImage(image, 0, 0, this);
     }
 
+    /**
+     * Updates the number of rows and columns displayed in the preview.
+     *
+     * @param rows    The number of rows.
+     * @param columns The number of columns.
+     */
     public void updateRowsColumns(int rows, int columns) {
         this.grid.setRows(rows);
         this.grid.setColumns(columns);

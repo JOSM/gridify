@@ -8,10 +8,21 @@ import java.util.function.Supplier;
  * intended for the user.
  */
 public class UserInputException extends GridifyException {
+    /**
+     * Constructs a UserInputException with a message.
+     *
+     * @param message The error message.
+     */
     public UserInputException(String message) {
         super(message);
     }
 
+    /**
+     * Returns a supplier that creates a UserInputException.
+     *
+     * @param message The error message.
+     * @return A supplier of UserInputException.
+     */
     public static Supplier<UserInputException> error(String message) {
         return () -> new UserInputException(message);
     }
