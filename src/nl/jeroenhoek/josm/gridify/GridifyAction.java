@@ -190,6 +190,14 @@ public class GridifyAction extends JosmAction {
         return Optional.empty();
     }
 
+    /**
+     * Interpolates a specified number of nodes between two existing nodes.
+     *
+     * @param start The starting node.
+     * @param stop  The ending node.
+     * @param n     The number of nodes to create between start and stop.
+     * @return A list of newly created nodes.
+     */
     @SuppressWarnings("MixedMutabilityReturnType")
     List<Node> nodesBetween(Node start, Node stop, int n) {
         if (n < 1) return Collections.emptyList();
@@ -207,12 +215,27 @@ public class GridifyAction extends JosmAction {
         return nodes;
     }
 
+    /**
+     * Helper to add primitives to a collection of AddCommands.
+     *
+     * @param commands   The collection to add commands to.
+     * @param dataSet    The JOSM data set.
+     * @param primitives The primitives to be added.
+     */
     void addToDataSet(Collection<Command> commands, DataSet dataSet, List<? extends OsmPrimitive> primitives) {
         for (OsmPrimitive primitive : primitives) {
             commands.add(new AddCommand(dataSet, primitive));
         }
     }
 
+    /**
+     * Combines a start node, a list of intermediate nodes, and a stop node into a single list.
+     *
+     * @param start   The start node.
+     * @param between The list of nodes in between.
+     * @param stop    The stop node.
+     * @return A combined list of nodes.
+     */
     List<Node> combine(Node start, List<Node> between, Node stop) {
         List<Node> nodes = new ArrayList<>();
         nodes.add(start);

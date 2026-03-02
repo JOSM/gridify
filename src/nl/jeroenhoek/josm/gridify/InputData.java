@@ -15,12 +15,24 @@ public class InputData {
     private final Way sourceWay;
     private final Map<String, String> tags;
 
+    /**
+     * Constructs InputData from a {@link GridExtrema} instance.
+     *
+     * @param extrema The grid extrema.
+     */
     public InputData(GridExtrema extrema) {
         this.extrema = extrema;
         this.tags = new HashMap<>();
         this.sourceWay = null;
     }
 
+    /**
+     * Constructs InputData with a source way and its tags.
+     *
+     * @param extrema   The grid extrema.
+     * @param sourceWay The source way.
+     * @param tags      The tags from the source way.
+     */
     public InputData(GridExtrema extrema, Way sourceWay, Map<String, String> tags) {
         this.extrema = extrema;
         this.sourceWay = sourceWay;

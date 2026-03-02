@@ -18,6 +18,12 @@ public class PositiveSpinner extends JSpinner {
     private final ValueChanged changeCallback;
     private Integer lastValue;
 
+    /**
+     * Constructs a PositiveSpinner.
+     *
+     * @param defaultValue   The initial value.
+     * @param changeCallback The callback to invoke when the value changes.
+     */
     public PositiveSpinner(int defaultValue, ValueChanged changeCallback) {
         super(new SpinnerNumberModel(defaultValue, 1, 1000, 1));
         this.changeCallback = changeCallback;
@@ -98,6 +104,9 @@ public class PositiveSpinner extends JSpinner {
         super.setValue(value);
     }
 
+    /**
+     * Sets the caret position to the end of the text.
+     */
     public void caretToEnd() {
         field.setCaretPosition(field.getText().length());
     }

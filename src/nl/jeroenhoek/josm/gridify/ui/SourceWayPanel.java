@@ -16,6 +16,13 @@ public class SourceWayPanel extends JPanel {
     private final JCheckBox copyTagsButton;
     private final JCheckBox deleteSourceWayButton;
 
+    /**
+     * Constructs a SourceWayPanel.
+     *
+     * @param copyTags               Initial state of the copy tags checkbox.
+     * @param deleteSourceWay        Initial state of the delete source way checkbox.
+     * @param disableDeleteSourceWay Whether to disable the delete source way checkbox.
+     */
     public SourceWayPanel(boolean copyTags, boolean deleteSourceWay, boolean disableDeleteSourceWay) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 

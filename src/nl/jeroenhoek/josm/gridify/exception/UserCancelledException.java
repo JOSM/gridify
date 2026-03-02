@@ -5,6 +5,9 @@ package nl.jeroenhoek.josm.gridify.exception;
  * Thrown when the user aborts the operation.
  */
 public class UserCancelledException extends GridifyException {
+    /**
+     * Constructs a UserCancelledException.
+     */
     public UserCancelledException() {
         super();
     }
