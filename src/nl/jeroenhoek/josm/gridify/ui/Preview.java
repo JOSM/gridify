@@ -2,8 +2,8 @@
 package nl.jeroenhoek.josm.gridify.ui;
 
 import nl.jeroenhoek.josm.gridify.GridExtrema;
-import nl.jeroenhoek.josm.gridify.GridExtrema.Dimensions;
 import nl.jeroenhoek.josm.gridify.ui.GridSizePanel.Nudge;
+import org.openstreetmap.josm.data.ProjectionBounds;
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.Node;
 
@@ -37,15 +37,15 @@ public class Preview extends JPanel {
     Grid grid;
 
     public Preview(GridExtrema gridExtrema, GridifySettingsDialog settingsDialog) {
-        Dimensions dimensions = gridExtrema.getDimensions();
+        ProjectionBounds dimensions = gridExtrema.getDimensions();
 
         // Compute the multiplication factor and offsets that convert between EastNorth and local preview canvas
         // coordinates.
-        double longestDistance = dimensions.longestOfWidthAndHeight();
+        double longestDistance = Math.max(dimensions.maxEast - dimensions.minEast, dimensions.maxNorth - dimensions.minNorth);
         double fraction = CANVAS_SIZE / longestDistance;
 
-        double offsetX = (longestDistance - (dimensions.getMaxX() - dimensions.getMinX())) / 2.0;
-        double offsetY = (longestDistance - (dimensions.getMaxY() - dimensions.getMinY())) / 2.0;
+        double offsetX = (longestDistance - (dimensions.maxEast - dimensions.minEast)) / 2.0;
+        double offsetY = (longestDistance - (dimensions.maxNorth - dimensions.minNorth)) / 2.0;
 
         grid = new Grid(
                 toCanvasCoordinates(dimensions, fraction, offsetX, offsetY, gridExtrema.getNodeOne()),
@@ -148,7 +148,7 @@ public class Preview extends JPanel {
      * @param node       Node to convert.
      * @return Local preview canvas coordinates.
      */
-    Coordinates toCanvasCoordinates(Dimensions dimensions,
+    Coordinates toCanvasCoordinates(ProjectionBounds dimensions,
                                     double fraction,
                                     double offsetX,
                                     double offsetY,
@@ -159,8 +159,8 @@ public class Preview extends JPanel {
 
         Coordinates coordinates = new Coordinates();
 
-        x -= dimensions.getMinX();
-        y -= dimensions.getMinY();
+        x -= dimensions.minEast;
+        y -= dimensions.minNorth;
 
         x += offsetX;
         y += offsetY;
