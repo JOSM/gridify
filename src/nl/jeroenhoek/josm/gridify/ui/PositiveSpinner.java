@@ -1,10 +1,15 @@
 // License: GPL. For details, see LICENSE file.
 package nl.jeroenhoek.josm.gridify.ui;
 
-import javax.swing.*;
+import javax.swing.JFormattedTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.util.Objects;
 

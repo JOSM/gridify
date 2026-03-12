@@ -1,12 +1,11 @@
 // License: GPL. For details, see LICENSE file.
 package nl.jeroenhoek.josm.gridify.ui;
 
-import java.awt.Dimension;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.Dimension;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
