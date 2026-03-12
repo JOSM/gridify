@@ -105,13 +105,19 @@ public class GridifySettingsDialog extends ExtendedDialog {
             controlPanel.add(sourceWayPanel, constraints);
         }
 
-        gridCountLabel = new JLabel();
+        JLabel statsLabel = new JLabel(tr("Statistics"));
         constraints.gridy = 6;
+        constraints.insets = insetsDefault;
+        statsLabel.setBorder(underline);
+        controlPanel.add(statsLabel, constraints);
+
+        gridCountLabel = new JLabel();
+        constraints.gridy = 7;
         constraints.insets = insetsDefault;
         controlPanel.add(gridCountLabel, constraints);
 
         cellSizeLabel = new JLabel();
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.insets = insetsDefault;
         controlPanel.add(cellSizeLabel, constraints);
 
