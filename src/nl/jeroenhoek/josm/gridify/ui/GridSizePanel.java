@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
+import static org.openstreetmap.josm.tools.I18n.tr;
+
 /**
  * UI widget that allows the user to set the grid division; i.e., how many rows and columns.
  */
@@ -33,6 +35,7 @@ public class GridSizePanel extends JPanel {
         flipButton.setPreferredSize(new JLabel(flipButton.getText()).getPreferredSize());
         flipButton.setPreferredSize(new Dimension(2 * flipButton.getPreferredSize().width, flipButton.getPreferredSize().height));
         flipButton.setMaximumSize(flipButton.getPreferredSize());
+        flipButton.setToolTipText(tr("Swap rows and columns"));
 
         add(spinnerRows);
         add(Box.createHorizontalStrut(10));
