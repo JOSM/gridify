@@ -1,5 +1,7 @@
 /bin/
 /javadoc/
+/target
+.idea
 
 # Build output
 /build/
