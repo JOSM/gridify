@@ -254,8 +254,8 @@ public class GridifyAction extends JosmAction {
 
         SystemOfMeasurement som = SystemOfMeasurement.getSystemOfMeasurement();
         String info = tr("Average cell size: {0} \u00d7 {1} (Area: {2})",
-                som.getDistText(dims.width),
                 som.getDistText(dims.height),
+                som.getDistText(dims.width),
                 som.getAreaText(dims.area));
         dialog.setCellSize(info);
     }
