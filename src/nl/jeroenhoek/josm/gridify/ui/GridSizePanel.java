@@ -5,7 +5,6 @@ import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
@@ -32,9 +31,12 @@ public class GridSizePanel extends JPanel {
         spinnerRows = new PositiveSpinner(rows, this::setRowCount);
         spinnerColumns = new PositiveSpinner(columns, this::setColumnCount);
         JButton flipButton = new JButton("×");
-        flipButton.setPreferredSize(new JLabel(flipButton.getText()).getPreferredSize());
-        flipButton.setPreferredSize(new Dimension(2 * flipButton.getPreferredSize().width, flipButton.getPreferredSize().height));
-        flipButton.setMaximumSize(flipButton.getPreferredSize());
+
+        // Increase the font size so the glyph is actually visible
+        flipButton.setFont(flipButton.getFont().deriveFont(18f));
+
+        Dimension size = new Dimension(30, 30);
+        flipButton.setPreferredSize(size);
         flipButton.setToolTipText(tr("Swap rows and columns"));
 
         add(spinnerRows);
