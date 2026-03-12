@@ -2,8 +2,8 @@
 package nl.jeroenhoek.josm.gridify;
 
 import nl.jeroenhoek.josm.gridify.exception.GridifyException;
-import nl.jeroenhoek.josm.gridify.exception.UserInputException;
 import nl.jeroenhoek.josm.gridify.exception.UserCancelledException;
+import nl.jeroenhoek.josm.gridify.exception.UserInputException;
 import nl.jeroenhoek.josm.gridify.ui.GridifySettingsDialog;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.command.AddCommand;
@@ -12,6 +12,7 @@ import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.command.SelectCommand;
 import org.openstreetmap.josm.command.SequenceCommand;
+import org.openstreetmap.josm.data.SystemOfMeasurement;
 import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -28,7 +29,13 @@ import org.openstreetmap.josm.tools.Utils;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
 
 import static nl.jeroenhoek.josm.gridify.exception.UserInputException.error;
 import static org.openstreetmap.josm.tools.I18n.tr;
@@ -38,6 +45,8 @@ import static org.openstreetmap.josm.tools.I18n.tr;
  */
 public class GridifyAction extends JosmAction {
     static final String DESCRIPTION = tr("Generate a grid of ways from four nodes.");
+
+    private final List<Command> currentPreviewCommands = new ArrayList<>();
 
     public GridifyAction() {
         super(
@@ -58,22 +67,17 @@ public class GridifyAction extends JosmAction {
     public void actionPerformed(ActionEvent actionEvent) {
         DataSet dataSet = getLayerManager().getEditDataSet();
 
-        Collection<Command> commands;
         try {
-            commands = performGridifyAction(dataSet);
+            performGridifyAction(dataSet);
         } catch (UserInputException e) {
             // Tell the user what was wrong with their input.
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(), e.getMessage());
-            return;
         } catch (UserCancelledException e) {
             // That's fine.
-            return;
         } catch (GridifyException e) {
             Logging.warn(e.getMessage());
-            return;
         }
 
-        UndoRedoHandler.getInstance().add(new SequenceCommand(DESCRIPTION, commands));
         MainApplication.getMap().repaint();
     }
 
@@ -90,7 +94,13 @@ public class GridifyAction extends JosmAction {
         updateEnabledStateOnModifiableSelection(selection);
     }
 
-    Collection<Command> performGridifyAction(DataSet dataSet) throws GridifyException {
+    /**
+     * Core logic of the Gridify action.
+     *
+     * @param dataSet The current dataset.
+     * @throws GridifyException Thrown if an error occurs during the operation.
+     */
+    void performGridifyAction(DataSet dataSet) throws GridifyException {
         if (dataSet == null) throw new GridifyException("Called with null data-set.");
 
         Collection<OsmPrimitive> selection = dataSet.getSelected();
@@ -101,30 +111,105 @@ public class GridifyAction extends JosmAction {
         GridifySettings settings = new GridifySettings();
 
         GridifySettingsDialog dialog = new GridifySettingsDialog(inputData, settings);
+
+        dialog.addChangeListener(() -> updatePreview(dialog, dataSet, inputData));
+
+        // Trigger initial calculation
+        updatePreview(dialog, dataSet, inputData);
+
         dialog.showDialog();
 
         // Only the OK button returns 1, the rest means 'Cancel' or a closed dialog window.
         if (dialog.getValue() != 1) {
+            // Undo any remaining preview changes
+            ListIterator<Command> it = currentPreviewCommands.listIterator(currentPreviewCommands.size());
+            while (it.hasPrevious()) {
+                it.previous().undoCommand();
+            }
+            currentPreviewCommands.clear();
+
             throw new UserCancelledException();
         }
 
-        GridExtrema extrema = inputData.getGridExtrema();
-        Collection<Command> commands = new ArrayList<>();
+        // On OK, we want to make a single sequence command appear in the undo history.
+        // The commands are already executed, so undo them before adding UndoRedoHandler, because it executes them again.
+        List<Command> finalCommands = new ArrayList<>(currentPreviewCommands);
 
-        // Read the user provided settings.
-        int numRows = dialog.getRowCount();
-        int numColumns = dialog.getColumnCount();
-        Operation operation = dialog.getOperation();
-        boolean deleteSourceWay = dialog.deleteSourceWay();
-        boolean copyTags = dialog.copyTags();
+        ListIterator<Command> it = finalCommands.listIterator(finalCommands.size());
+        while (it.hasPrevious()) {
+            it.previous().undoCommand();
+        }
+
+        currentPreviewCommands.clear();
+        UndoRedoHandler.getInstance().add(new SequenceCommand(tr("Create a grid of {0} elements", getCreateWayCount(finalCommands)), finalCommands));
 
         // Update settings properties now that we are about to commence the operation.
         // This way the user gets to keep the last settings they entered.
-        settings.setNumRows(numRows);
-        settings.setNumColumns(numColumns);
-        settings.setDeleteSource(deleteSourceWay);
-        settings.setCopyTagsFromSource(copyTags);
-        settings.setOperation(operation);
+        settings.setNumRows(dialog.getRowCount());
+        settings.setNumColumns(dialog.getColumnCount());
+        settings.setDeleteSource(dialog.deleteSourceWay());
+        settings.setCopyTagsFromSource(dialog.copyTags());
+        settings.setOperation(dialog.getOperation());
+    }
+
+    /**
+     * Updates the preview by recalculating and applying grid commands.
+     *
+     * @param dialog    The settings dialog
+     * @param dataSet   The JOSM data set
+     * @param inputData The input data (selected nodes/way)
+     */
+    private void updatePreview(GridifySettingsDialog dialog, DataSet dataSet, InputData inputData) {
+        // 1. Undo previous preview
+        ListIterator<Command> it = currentPreviewCommands.listIterator(currentPreviewCommands.size());
+        while (it.hasPrevious()) {
+            it.previous().undoCommand();
+        }
+        currentPreviewCommands.clear();
+
+        // 2. Calculate new grid
+        Collection<Command> newCommands;
+        try {
+            newCommands = calculateGridCommands(dataSet, inputData,
+                    dialog.getRowCount(),
+                    dialog.getColumnCount(),
+                    dialog.getOperation(),
+                    dialog.copyTags(),
+                    dialog.deleteSourceWay());
+        } catch (GridifyException e) {
+            Logging.warn(e.getMessage());
+            return;
+        }
+
+        // 3. Apply new commands (but don't add to UndoRedoHandler yet)
+        for (Command cmd : newCommands) {
+            cmd.executeCommand();
+        }
+        currentPreviewCommands.addAll(newCommands);
+
+        // 4. Update the UI count and cell size
+        updateDialogInfo(dialog, newCommands, inputData);
+
+        MainApplication.getMap().repaint();
+    }
+
+    /**
+     * Calculates the JOSM commands needed to generate the grid.
+     *
+     * @param dataSet         The dataset to operate on.
+     * @param inputData       The user-selected input data (nodes/way).
+     * @param numRows         Number of rows in the grid.
+     * @param numColumns      Number of columns in the grid.
+     * @param operation       The operation type (blocks or lines).
+     * @param copyTags        Whether to copy tags from the source way.
+     * @param deleteSourceWay Whether to delete the source way after the operation.
+     * @return A collection of commands that, when executed, generate the grid.
+     * @throws GridifyException Thrown if there is an error in the grid calculation.
+     */
+    Collection<Command> calculateGridCommands(DataSet dataSet, InputData inputData, int numRows, int numColumns,
+                                              Operation operation, boolean copyTags, boolean deleteSourceWay) throws GridifyException {
+        GridExtrema extrema = inputData.getGridExtrema();
+        Collection<Command> commands = new ArrayList<>();
 
         List<Node> nodesTopBetween = nodesBetween(extrema.one, extrema.two, numColumns - 1);
         addToDataSet(commands, dataSet, nodesTopBetween);
@@ -158,6 +243,30 @@ public class GridifyAction extends JosmAction {
         commands.add(new SelectCommand(dataSet, new ArrayList<>(ways)));
 
         return commands;
+    }
+
+    private void updateDialogInfo(GridifySettingsDialog dialog, Collection<Command> commands, InputData inputData) {
+        long wayCount = getCreateWayCount(commands);
+        dialog.setGridCount((int) wayCount);
+
+        GridExtrema extrema = inputData.getGridExtrema();
+        GridExtrema.CellDimensions dims = extrema.getAverageCellDimensions(dialog.getRowCount(), dialog.getColumnCount());
+
+        SystemOfMeasurement som = SystemOfMeasurement.getSystemOfMeasurement();
+        String info = tr("Average cell size: {0} \u00d7 {1} (Area: {2})",
+                som.getDistText(dims.width),
+                som.getDistText(dims.height),
+                som.getAreaText(dims.area));
+        dialog.setCellSize(info);
+    }
+
+    private static long getCreateWayCount(Collection<Command> commands) {
+        return commands.stream()
+                .filter(c -> c instanceof AddCommand)
+                .map(c -> (AddCommand) c)
+                .flatMap(c -> c.getParticipatingPrimitives().stream())
+                .filter(p -> p instanceof Way)
+                .count();
     }
 
     Optional<InputData> inputDataFromSelection(Collection<OsmPrimitive> selection) {

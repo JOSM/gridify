@@ -1,19 +1,26 @@
 // License: GPL. For details, see LICENSE file.
 package nl.jeroenhoek.josm.gridify;
 
+import org.openstreetmap.josm.data.ProjectionBounds;
 import org.openstreetmap.josm.data.coor.EastNorth;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.tools.Geometry;
+import org.openstreetmap.josm.data.projection.Projection;
+import org.openstreetmap.josm.data.projection.ProjectionRegistry;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
- * Four nodes representing the area selected by the user. The order of the nodes describes the resulting polygon in a
- * clockwise manner.
+ * Four nodes representing the area selected by the user.
+ * The nodes are normalized into TL, TR, BR, BL order.
  */
 public final class GridExtrema {
-    Node one;
-    Node two;
-    Node three;
-    Node four;
+    Node one;   // TL
+    Node two;   // TR
+    Node three; // BR
+    Node four;  // BL
 
     private GridExtrema(Node one, Node two, Node three, Node four) {
         this.one = one;
@@ -23,48 +30,51 @@ public final class GridExtrema {
     }
 
     /**
-     * Static constructor for {@link GridExtrema}. This method figures out the correct order of the four nodes to
-     * form a clockwise way starting at node {@code a}.
-     *
-     * @param a A node.
-     * @param b Another node.
-     * @param c Yet another node.
-     * @param d Again, another node.
-     * @return A {@link GridExtrema} instance.
+     * Creates a GridExtrema with normalized corner ordering: TL, TR, BR, BL.
      */
     public static GridExtrema from(Node a, Node b, Node c, Node d) {
-        EastNorth enForA = a.getEastNorth();
-        EastNorth enForB = b.getEastNorth();
-        EastNorth enForC = c.getEastNorth();
-        EastNorth enForD = d.getEastNorth();
+        List<Node> nodes = Arrays.asList(a, b, c, d);
 
-        double a1 = Geometry.getCornerAngle(enForB, enForA, enForC);
-        double a2 = Geometry.getCornerAngle(enForB, enForA, enForD);
-        double a3 = Geometry.getCornerAngle(enForC, enForA, enForD);
+        // calculate centroid
+        double cx = 0, cy = 0;
+        for (Node n : nodes) {
+            EastNorth en = n.getEastNorth();
+            cx += en.east();
+            cy += en.north();
+        }
+        cx /= 4.0;
+        cy /= 4.0;
 
-        // Figure out the correct order of the four nodes to form a clockwise way starting at
-        // node 'a'. The two nodes that form the biggest angle when connected with starting node
-        // 'a' (1) in the middle are by necessity nodes 2 and 4. The direction of the angle tells
-        // us which is which.
-        if (Math.abs(a1) > Math.abs(a2) && Math.abs(a1) > Math.abs(a3)) {
-            if (a1 >= 0) {
-                return new GridExtrema(a, b, d, c);
-            } else {
-                return new GridExtrema(a, c, d, b);
-            }
-        } else if (Math.abs(a2) > Math.abs(a1) && Math.abs(a2) > Math.abs(a3)) {
-            if (a2 >= 0) {
-                return new GridExtrema(a, b, c, d);
-            } else {
-                return new GridExtrema(a, d, c, b);
-            }
-        } else {
-            if (a3 >= 0) {
-                return new GridExtrema(a, c, b, d);
-            } else {
-                return new GridExtrema(a, d, b, c);
+        // sort CCW around centroid by angle
+        final double finalCy = cy;
+        final double finalCx = cx;
+        nodes.sort(Comparator.comparingDouble(n -> {
+            EastNorth en = n.getEastNorth();
+            return Math.atan2(en.north() - finalCy, en.east() - finalCx);
+        }));
+
+        // find index of top-left (max north)
+        int tlIndex = 0;
+        double maxNorth = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < 4; i++) {
+            double north = nodes.get(i).getEastNorth().north();
+            if (north > maxNorth) {
+                maxNorth = north;
+                tlIndex = i;
             }
         }
+
+        // nodes are CCW; map to TL, TR, BR, BL
+        // If index i is TL:
+        // i-1 (or i+3) is TR
+        // i-2 (or i+2) is BR
+        // i-3 (or i+1) is BL
+        Node tl = nodes.get(tlIndex);
+        Node tr = nodes.get((tlIndex + 3) % 4); // previous in CCW is TR
+        Node br = nodes.get((tlIndex + 2) % 4); // opposite is BR
+        Node bl = nodes.get((tlIndex + 1) % 4); // next in CCW is BL
+
+        return new GridExtrema(tl, tr, br, bl);
     }
 
     public Node getNodeOne() {
@@ -83,79 +93,79 @@ public final class GridExtrema {
         return four;
     }
 
-    public Dimensions getDimensions() {
-        Dimensions dimensions = new Dimensions(this.one.getEastNorth());
+    /**
+     * Holds calculated cell dimensions.
+     */
+    public static class CellDimensions {
+        /**
+         * The average width of the cell.
+         */
+        public final double width;
+        /**
+         * The average height of the cell.
+         */
+        public final double height;
+        /**
+         * The area of the cell.
+         */
+        public final double area;
 
-        dimensions.recomputeBounds(this.two.getEastNorth());
-        dimensions.recomputeBounds(this.three.getEastNorth());
-        dimensions.recomputeBounds(this.four.getEastNorth());
-
-        return dimensions;
+        /**
+         * Initializes the cell dimensions.
+         *
+         * @param width  The average width.
+         * @param height The average height.
+         * @param area   The area.
+         */
+        public CellDimensions(double width, double height, double area) {
+            this.width = width;
+            this.height = height;
+            this.area = area;
+        }
     }
 
     /**
-     * Value class containing the minimum and maximum {@link EastNorth} coordinates of the nodes passed to it. This
-     * effectively gives us a bounding box for a set of nodes.
+     * Calculates the average dimensions of a single cell in the grid using meters.
+     *
+     * @param numRows Total number of rows.
+     * @param numCols Total number of columns.
+     * @return The {@link CellDimensions} of a single cell.
      */
-    public static class Dimensions {
-        double minY;
-        double maxY;
-        double minX;
-        double maxX;
+    public CellDimensions getAverageCellDimensions(int numRows, int numCols) {
+        Projection proj = ProjectionRegistry.getProjection();
 
-        /**
-         * Create a new {@link Dimensions} instance.
-         *
-         * @param eastNorth Use this coordinate pair as the base value.
-         */
-        public Dimensions(EastNorth eastNorth) {
-            minY = eastNorth.getY();
-            maxY = minY;
-            minX = eastNorth.getX();
-            maxX = minX;
-        }
+        // convert to LatLon to measure real-world meters
+        LatLon l1 = proj.eastNorth2latlon(one.getEastNorth());   // TL
+        LatLon l2 = proj.eastNorth2latlon(two.getEastNorth());   // TR
+        LatLon l3 = proj.eastNorth2latlon(three.getEastNorth()); // BR
+        LatLon l4 = proj.eastNorth2latlon(four.getEastNorth());  // BL
 
-        /**
-         * Add a coordinate pair to this class and recompute the bounds.
-         *
-         * @param eastNorth Coordinate pair to add.
-         */
-        public void recomputeBounds(EastNorth eastNorth) {
-            minY = Math.min(minY, eastNorth.getY());
-            maxY = Math.max(maxY, eastNorth.getY());
-            minX = Math.min(minX, eastNorth.getX());
-            maxX = Math.max(maxX, eastNorth.getX());
-        }
+        // calculate average width (top edge + bottom edge)
+        double widthTop = l1.greatCircleDistance(l2);
+        double widthBottom = l4.greatCircleDistance(l3);
+        double avgTotalWidth = (widthTop + widthBottom) / 2.0;
 
-        /**
-         * Compute which is greater; the width or the height of the bounding box represented by this class, and
-         * return it.
-         *
-         * @return The greater value of the width and height.
-         */
-        public double longestOfWidthAndHeight() {
-            return Math.max(maxX - minX, maxY - minY);
-        }
+        // calculate average height (left edge + right edge)
+        double heightLeft = l1.greatCircleDistance(l4);
+        double heightRight = l2.greatCircleDistance(l3);
+        double avgTotalHeight = (heightLeft + heightRight) / 2.0;
 
-        public double getMinY() {
-            return minY;
-        }
+        double cellWidth = avgTotalWidth / numCols;
+        double cellHeight = avgTotalHeight / numRows;
 
-        public double getMaxY() {
-            return maxY;
-        }
+        return new CellDimensions(cellWidth, cellHeight, cellWidth * cellHeight);
+    }
 
-        public double getMinX() {
-            return minX;
-        }
-
-        public double getMaxX() {
-            return maxX;
-        }
-
-        @Override
-        public String toString() {
-            return "(x: " + minX + "/" + maxX + ", y: " + minY + "/" + maxY + ")";
-        }
+    /**
+     * Returns the bounding box of the four nodes.
+     *
+     * @return The {@link ProjectionBounds} of the grid extrema.
+     */
+    public ProjectionBounds getDimensions() {
+        ProjectionBounds bounds = new ProjectionBounds(one.getEastNorth());
+        bounds.extend(two.getEastNorth());
+        bounds.extend(three.getEastNorth());
+        bounds.extend(four.getEastNorth());
+        return bounds;
     }
 }

@@ -22,8 +22,9 @@ public class SourceWayPanel extends JPanel {
      * @param copyTags               Initial state of the copy tags checkbox.
      * @param deleteSourceWay        Initial state of the delete source way checkbox.
      * @param disableDeleteSourceWay Whether to disable the delete source way checkbox.
+     * @param changeCallback         The callback to invoke when any option changes.
      */
-    public SourceWayPanel(boolean copyTags, boolean deleteSourceWay, boolean disableDeleteSourceWay) {
+    public SourceWayPanel(boolean copyTags, boolean deleteSourceWay, boolean disableDeleteSourceWay, Runnable changeCallback) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         copyTagsButton = new JCheckBox(tr("Copy tags from source way"));
@@ -38,6 +39,11 @@ public class SourceWayPanel extends JPanel {
         } else {
             deleteSourceWayButton.setSelected(deleteSourceWay);
         }
+        deleteSourceWayButton.addActionListener(e -> {
+            if (changeCallback != null) {
+                changeCallback.run();
+            }
+        });
 
         add(deleteSourceWayButton);
     }

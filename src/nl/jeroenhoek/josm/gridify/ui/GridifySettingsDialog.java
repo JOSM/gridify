@@ -33,6 +33,10 @@ public class GridifySettingsDialog extends ExtendedDialog {
     private OperationChooser operationChooser;
     private SourceWayPanel sourceWayPanel;
 
+    private JLabel gridCountLabel;
+    private JLabel cellSizeLabel;
+    private Runnable changeListener;
+
     public GridifySettingsDialog(InputData inputData, GridifySettings settings) {
         super(MainApplication.getMainFrame(), tr("Gridify preview"), tr("Gridify"), tr("Cancel"));
         this.inputData = inputData;
@@ -56,7 +60,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         operationChooserLabel.setBorder(underline);
         controlPanel.add(operationChooserLabel, constraints);
 
-        operationChooser = new OperationChooser(settings.getOperation());
+        operationChooser = new OperationChooser(settings.getOperation(), this::fireChangeEvent);
         constraints.gridy = 1;
         constraints.insets = insetsIndent;
         controlPanel.add(operationChooser, constraints);
@@ -68,7 +72,10 @@ public class GridifySettingsDialog extends ExtendedDialog {
         controlPanel.add(gridSizePanelLabel, constraints);
 
         gridSizePanel = new GridSizePanel(
-                preview::updateRowsColumns,
+                (rows, columns) -> {
+                    preview.updateRowsColumns(rows, columns);
+                    fireChangeEvent();
+                },
                 settings.getNumRows(),
                 settings.getNumColumns()
         );
@@ -90,12 +97,23 @@ public class GridifySettingsDialog extends ExtendedDialog {
             sourceWayPanel = new SourceWayPanel(
                     settings.copyTagsFromSource(),
                     deleteSourceWay || settings.deleteSource(),
-                    !inputData.getSourceWay().get().getReferrers().isEmpty()
+                    !inputData.getSourceWay().get().getReferrers().isEmpty(),
+                    this::fireChangeEvent
             );
             constraints.gridy = 5;
             constraints.insets = insetsIndent;
             controlPanel.add(sourceWayPanel, constraints);
         }
+
+        gridCountLabel = new JLabel();
+        constraints.gridy = 6;
+        constraints.insets = insetsDefault;
+        controlPanel.add(gridCountLabel, constraints);
+
+        cellSizeLabel = new JLabel();
+        constraints.gridy = 7;
+        constraints.insets = insetsDefault;
+        controlPanel.add(cellSizeLabel, constraints);
 
         rootPanel.add(controlPanel);
         rootPanel.add(Box.createRigidArea(new Dimension(10, 10)));
@@ -109,6 +127,39 @@ public class GridifySettingsDialog extends ExtendedDialog {
         setResizable(false);
 
         gridSizePanel.requestFocusInWindow();
+    }
+
+    /**
+     * Updates the grid count display in the dialog.
+     *
+     * @param count The number of ways that will be generated.
+     */
+    public void setGridCount(int count) {
+        gridCountLabel.setText(tr("Number of generated elements: {0}", count));
+    }
+
+    /**
+     * Updates the cell size information in the dialog.
+     *
+     * @param cellSizeText The formatted text showing width, height, and area.
+     */
+    public void setCellSize(String cellSizeText) {
+        cellSizeLabel.setText(cellSizeText);
+    }
+
+    /**
+     * Registers a listener to be notified when any setting in the dialog changes.
+     *
+     * @param listener The listener to add.
+     */
+    public void addChangeListener(Runnable listener) {
+        this.changeListener = listener;
+    }
+
+    private void fireChangeEvent() {
+        if (changeListener != null) {
+            changeListener.run();
+        }
     }
 
     @Override
