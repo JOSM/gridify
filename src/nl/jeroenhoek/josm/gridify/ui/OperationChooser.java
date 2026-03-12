@@ -14,7 +14,13 @@ import javax.swing.JRadioButton;
 public class OperationChooser extends JPanel {
     private Operation selected;
 
-    public OperationChooser(Operation defaultOperation) {
+    /**
+     * Constructs an OperationChooser.
+     *
+     * @param defaultOperation The default selected operation.
+     * @param changeCallback   The callback to invoke when the selection changes.
+     */
+    public OperationChooser(Operation defaultOperation, Runnable changeCallback) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         ButtonGroup group = new ButtonGroup();
@@ -25,6 +31,9 @@ public class OperationChooser extends JPanel {
             button.addActionListener(e -> {
                 if (button.isSelected()) {
                     selected = operation;
+                    if (changeCallback != null) {
+                        changeCallback.run();
+                    }
                 }
             });
             if (operation == defaultOperation) {
