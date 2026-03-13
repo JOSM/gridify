@@ -23,6 +23,9 @@ public class PositiveSpinner extends JSpinner {
     private final ValueChanged changeCallback;
     private Integer lastValue;
 
+    public static final int SPINNER_MIN_VALUE = 1;
+    public static final int SPINNER_MAX_VALUE = 1_000;
+
     /**
      * Constructs a PositiveSpinner.
      *
@@ -30,7 +33,7 @@ public class PositiveSpinner extends JSpinner {
      * @param changeCallback The callback to invoke when the value changes.
      */
     public PositiveSpinner(int defaultValue, ValueChanged changeCallback) {
-        super(new SpinnerNumberModel(defaultValue, 1, 1000, 1));
+        super(new SpinnerNumberModel(defaultValue, SPINNER_MIN_VALUE, SPINNER_MAX_VALUE, 1));
         this.changeCallback = changeCallback;
         DefaultEditor editor = (DefaultEditor) getEditor();
         field = editor.getTextField();

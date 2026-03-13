@@ -4,12 +4,18 @@ import org.openstreetmap.josm.data.preferences.BooleanProperty;
 import org.openstreetmap.josm.data.preferences.EnumProperty;
 import org.openstreetmap.josm.data.preferences.IntegerProperty;
 
+import static nl.jeroenhoek.josm.gridify.ui.PositiveSpinner.SPINNER_MAX_VALUE;
+import static nl.jeroenhoek.josm.gridify.ui.PositiveSpinner.SPINNER_MIN_VALUE;
+
 /**
  * All settings used by Gridify.
  */
 public class GridifySettings {
-    final IntegerProperty numRowsSetting = new IntegerProperty("gridify.num_rows", 2);
-    final IntegerProperty numColsSetting = new IntegerProperty("gridify.num_cols", 4);
+    private final static int DEFAULT_ROW_COUNT = 2;
+    private final static int DEFAULT_COL_COUNT = 4;
+
+    final IntegerProperty numRowsSetting = new IntegerProperty("gridify.num_rows", DEFAULT_ROW_COUNT);
+    final IntegerProperty numColsSetting = new IntegerProperty("gridify.num_cols", DEFAULT_COL_COUNT);
     final BooleanProperty copyTagsFromSource = new BooleanProperty("gridify.copy_tags_from_source", true);
     final BooleanProperty deleteSource = new BooleanProperty("gridify.delete_source", true);
 
@@ -25,10 +31,10 @@ public class GridifySettings {
     public int getNumRows() {
         int rows = numRowsSetting.get();
 
-        // Limit number of rows to permissible values.
-        if (rows < 1 || rows > 1000) {
-            setNumRows(2);
-            return 2;
+        // Limit the number of rows to permissible values
+        if (rows < SPINNER_MIN_VALUE || rows > SPINNER_MAX_VALUE) {
+            setNumRows(DEFAULT_ROW_COUNT);
+            return DEFAULT_ROW_COUNT;
         }
 
         return rows;
@@ -51,10 +57,10 @@ public class GridifySettings {
     public int getNumColumns() {
         int columns = numColsSetting.get();
 
-        // Limit number of columns to permissible values.
-        if (columns < 1 || columns > 1000) {
-            setNumColumns(4);
-            return 4;
+        // Limit the number of columns to permissible values
+        if (columns < SPINNER_MIN_VALUE || columns > SPINNER_MAX_VALUE) {
+            setNumColumns(DEFAULT_COL_COUNT);
+            return DEFAULT_COL_COUNT;
         }
 
         return columns;
