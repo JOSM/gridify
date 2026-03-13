@@ -77,8 +77,6 @@ public class GridifyAction extends JosmAction {
         } catch (GridifyException e) {
             Logging.warn(e.getMessage());
         }
-
-        MainApplication.getMap().repaint();
     }
 
     @Override
@@ -156,7 +154,7 @@ public class GridifyAction extends JosmAction {
      * Updates the preview by recalculating and applying grid commands.
      *
      * @param dialog    The settings dialog
-     * @param dataSet   The JOSM data set
+     * @param dataSet   The data set
      * @param inputData The input data (selected nodes/way)
      */
     private void updatePreview(GridifySettingsDialog dialog, DataSet dataSet, InputData inputData) {
@@ -189,8 +187,6 @@ public class GridifyAction extends JosmAction {
 
         // 4. Update the UI count and cell size
         updateDialogInfo(dialog, newCommands, inputData);
-
-        MainApplication.getMap().repaint();
     }
 
     /**
@@ -328,7 +324,7 @@ public class GridifyAction extends JosmAction {
      * Helper to add primitives to a collection of AddCommands.
      *
      * @param commands   The collection to add commands to.
-     * @param dataSet    The JOSM data set.
+     * @param dataSet    The data set.
      * @param primitives The primitives to be added.
      */
     void addToDataSet(Collection<Command> commands, DataSet dataSet, List<? extends OsmPrimitive> primitives) {
