@@ -104,9 +104,10 @@ public class PositiveSpinner extends JSpinner {
 
     @Override
     public void setValue(Object value) {
-        // No need to update the value if nothing changes. This prevents the caret being placed at an awkward position.
-        if (Objects.equals(value, lastValue)) return;
+        // Check against the actual model value instead of lastValue so the model doesn't get stuck.
+        if (Objects.equals(value, getValue())) return;
 
+        this.lastValue = (Integer) value;
         super.setValue(value);
     }
 
