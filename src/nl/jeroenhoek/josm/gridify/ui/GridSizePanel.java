@@ -59,34 +59,36 @@ public class GridSizePanel extends JPanel {
     }
 
     void setRowCount(int rows) {
-        if (rows < 1 || rows > 1000) return;
+        if (rows < PositiveSpinner.SPINNER_MIN_VALUE || rows > PositiveSpinner.SPINNER_MAX_VALUE) return;
         this.rows = rows;
         this.spinnerRows.setValue(rows);
         changeCallback.changed(getRowCount(), getColumnCount());
     }
 
     void setColumnCount(int columns) {
-        if (columns < 1 || columns > 1000) return;
+        if (columns < PositiveSpinner.SPINNER_MIN_VALUE || columns > PositiveSpinner.SPINNER_MAX_VALUE) return;
         this.columns = columns;
         this.spinnerColumns.setValue(columns);
         changeCallback.changed(getRowCount(), getColumnCount());
     }
 
     void nudgeRowCount(Nudge direction) {
-        if (direction == Nudge.INCREMENT || this.rows > 1) {
-            this.rows += direction == Nudge.INCREMENT ? 1 : -1;
-            this.spinnerRows.setValue(rows);
+        int newRows = this.rows + (direction == Nudge.INCREMENT ? 1 : -1);
+        if (newRows >= PositiveSpinner.SPINNER_MIN_VALUE && newRows <= PositiveSpinner.SPINNER_MAX_VALUE) {
+            this.rows = newRows;
+            this.spinnerRows.setValue(newRows);
             this.spinnerRows.caretToEnd();
-            changeCallback.changed(getRowCount(), getColumnCount());
+            changeCallback.changed(this.rows, this.columns);
         }
     }
 
     void nudgeColumnCount(Nudge direction) {
-        if (direction == Nudge.INCREMENT || this.columns > 1) {
-            this.columns += direction == Nudge.INCREMENT ? 1 : -1;
-            this.spinnerColumns.setValue(columns);
+        int newCols = this.columns + (direction == Nudge.INCREMENT ? 1 : -1);
+        if (newCols >= PositiveSpinner.SPINNER_MIN_VALUE && newCols <= PositiveSpinner.SPINNER_MAX_VALUE) {
+            this.columns = newCols;
+            this.spinnerColumns.setValue(newCols);
             this.spinnerColumns.caretToEnd();
-            changeCallback.changed(getRowCount(), getColumnCount());
+            changeCallback.changed(this.rows, this.columns);
         }
     }
 
