@@ -83,7 +83,7 @@ public class GridifySettingsDialog extends ExtendedDialog {
         constraints.insets = insetsIndent;
         controlPanel.add(gridSizePanel, constraints);
 
-        if (inputData.getSourceWay().isPresent()) {
+        inputData.getSourceWay().ifPresent(sourceWay -> {
             JLabel wayLabel = new JLabel(tr("Source way"));
             wayLabel.setBorder(underline);
             constraints.gridy = 4;
@@ -92,18 +92,18 @@ public class GridifySettingsDialog extends ExtendedDialog {
 
             // Always check the 'delete source way' option when a new way is used as template.
             // It tends to have been drawn specifically to cut up.
-            boolean deleteSourceWay = inputData.getSourceWay().get().isNew();
+            boolean deleteSourceWay = sourceWay.isNew();
 
             sourceWayPanel = new SourceWayPanel(
                     settings.copyTagsFromSource(),
                     deleteSourceWay || settings.deleteSource(),
-                    !inputData.getSourceWay().get().getReferrers().isEmpty(),
+                    !sourceWay.getReferrers().isEmpty(),
                     this::fireChangeEvent
             );
             constraints.gridy = 5;
             constraints.insets = insetsIndent;
             controlPanel.add(sourceWayPanel, constraints);
-        }
+        });
 
         JLabel statsLabel = new JLabel(tr("Statistics"));
         constraints.gridy = 6;
