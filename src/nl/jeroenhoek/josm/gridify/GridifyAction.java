@@ -54,11 +54,8 @@ public class GridifyAction extends JosmAction {
                 "gridify",
                 DESCRIPTION,
                 Shortcut.registerShortcut(
-                        "tools:gridify",
-                        tr("Tool: {0}", DESCRIPTION),
-                        KeyEvent.VK_Y,
-                        Shortcut.ALT_SHIFT
-                ),
+                        "tools:gridify", tr("Tool: {0}", DESCRIPTION),
+                        KeyEvent.VK_Y, Shortcut.ALT_SHIFT),
                 true
         );
     }
