@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
+import java.text.ParseException;
 import java.util.Objects;
 
 /**
@@ -42,24 +43,19 @@ public class PositiveSpinner extends JSpinner {
 
         // Kind of weird that the default JSpinner doesn't do this.
         addMouseWheelListener(e -> {
-            int ticks = e.getWheelRotation();
-            Object newValue = null;
-            if (ticks > 0) {
-                for (int tick = 0; tick < ticks; tick++) {
-                    Object previous = getPreviousValue();
-                    if (previous == null) break;
-                    newValue = previous;
-                }
-            } else if (ticks < 0) {
-                for (int tick = 0; tick > ticks; tick--) {
-                    Object next = getNextValue();
-                    if (next == null) break;
-                    newValue = next;
-                }
+            try {
+                commitEdit();
+            } catch (ParseException ignore) {
             }
+            int ticks = e.getWheelRotation();
+            int current = (Integer) getValue();
 
-            if (newValue != null) {
+            // e.getWheelRotation() is positive when scrolling down (decrease) and negative when scrolling up (increase)
+            int newValue = Math.max(SPINNER_MIN_VALUE, Math.min(SPINNER_MAX_VALUE, current - ticks));
+
+            if (newValue != current) {
                 setValue(newValue);
+                caretToEnd();
             }
         });
 
@@ -88,27 +84,30 @@ public class PositiveSpinner extends JSpinner {
     }
 
     void callbackIfChanged() {
-        Integer newValue;
+        String text = field.getText();
+        if (text.isBlank()) {
+            return;
+        }
+
+        int newValue;
         try {
-            newValue = Integer.parseInt(field.getText());
+            newValue = Integer.parseInt(text);
         } catch (NumberFormatException e) {
-            // Ignore.
             return;
         }
 
         if (!Objects.equals(newValue, lastValue)) {
-            SwingUtilities.invokeLater(() -> {
-                this.lastValue = newValue;
-                changeCallback.onChange(newValue);
-            });
+            this.lastValue = newValue;
+            SwingUtilities.invokeLater(() -> changeCallback.onChange(newValue));
         }
     }
 
     @Override
     public void setValue(Object value) {
-        // No need to update the value if nothing changes. This prevents the caret being placed at an awkward position.
-        if (Objects.equals(value, lastValue)) return;
+        // Check against the actual model value instead of lastValue so the model doesn't get stuck.
+        if (Objects.equals(value, getValue())) return;
 
+        this.lastValue = (Integer) value;
         super.setValue(value);
     }
 
